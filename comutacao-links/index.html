@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Comutação de Links</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <header class="header">
+      <h1>Comutação de Links</h1>
+      <p class="sub">Gerencie transportes arrastando e soltando entre as caixas.</p>
+    </header>
+
+    <!-- Títulos das colunas -->
+    <div class="columns-title">
+      <span class="pill">Sumicity</span>
+      <span class="pill">Internexa</span>
+    </div>
+
+    <!-- Área principal: board + sidebar -->
+    <div class="layout">
+      <main class="board">
+        <section
+          class="dropzone zone-sumicity"
+          data-zona="Sumicity"
+          ondragover="onDragOver(event);"
+          ondrop="onDrop(event);"
+        >
+          <div id="item-ptt" class="draggable" draggable="true" ondragstart="onDragStart(event);">PTT</div>
+        </section>
+
+        <section
+          class="dropzone zone-internexa"
+          data-zona="Internexa"
+          ondragover="onDragOver(event);"
+          ondrop="onDrop(event);"
+        >
+          <div id="item-lumen" class="draggable" draggable="true" ondragstart="onDragStart(event);">LUMEN</div>
+          <div id="item-isaip" class="draggable" draggable="true" ondragstart="onDragStart(event);">ISA-IP</div>
+        </section>
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h3>Status das Conexões</h3>
+        <ul id="status-list" class="list"></ul>
+
+        <div class="divider"></div>
+
+        <h3>Histórico de Comutações</h3>
+        <ul id="history-list" class="list history"></ul>
+
+        <div class="actions">
+          <button id="btnReset" class="btn">Resetar posições</button>
+          <button id="btnClearHistory" class="btn btn-ghost">Limpar histórico</button>
+        </div>
+
+        <small class="hint">Ao soltar, confirme e autorize com senha para concluir a comutação. O estado e o histórico são salvos localmente.</small>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <small>© Ferramenta de Comutação • UI refinada</small>
+    </footer>
+  </div>
+
+  <!-- Modal de senha -->
+  <div id="authModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal">
+      <h3>Autorização requerida</h3>
+      <p class="modal-desc">Informe a senha para autorizar esta comutação.</p>
+      <form id="authForm">
+        <label for="authPassword" class="visually-hidden">Senha</label>
+        <input id="authPassword" type="password" class="input" placeholder="Digite a senha" autocomplete="current-password" required />
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="btnCancelAuth">Cancelar</button>
+          <button type="submit" class="btn" id="btnConfirmAuth">Autorizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+/* Base do “cover” escuro + pequenos refinamentos */
+:root { --gap: 4rem; }
+
+.section-gap { padding-block: var(--gap); }
+.section-title { margin-bottom: 1.25rem; border-left: .25rem solid #6c757d; padding-left: .75rem; }
+
+.card { border: 0; background-clip: padding-box; }
+.bg-secondary-subtle { background-color: rgba(108,117,125,.15)!important; }
+.bg-dark-subtle      { background-color: rgba(33,37,41,.35)!important; }
+
+/* Timeline simples */
+.timeline { list-style: none; padding-left: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.2); }
+.timeline li { position: relative; padding-left: 2.5rem; margin-bottom: 1rem; }
+.timeline li::before {
+  content: ""; position: absolute; left: 6px; top: .35rem; width: 14px; height: 14px;
+  border-radius: 50%; background: #6c757d; box-shadow: 0 0 0 3px rgba(255,255,255,.06);
+}
+.timeline .when { font-weight: 700; display: inline-block; margin-bottom: .25rem; opacity: .8; }
+.timeline .what { opacity: .9; }
+
+/* Evita que cards encostem no rodapé fixo, se existir */
+section:last-of-type { padding-bottom: calc(var(--gap) + 2.5rem); }

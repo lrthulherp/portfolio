@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monitoramento de Câmeras — Detalhes</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    body { background:#0f172a; color:#e5e7eb; }
+    .chip { background:#1f2937; border:1px solid rgba(255,255,255,.1); border-radius:999px; padding:.25rem .6rem; font-size:.85rem; }
+    .card { background:#111827; border:1px solid rgba(255,255,255,.1); }
+    a.btn { border-radius:10px; }
+    code { background:#0b1221; color:#e5e7eb; padding:.2rem .4rem; border-radius:6px; }
+    .muted { color:#94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <header class="mb-4">
+      <h1 class="h3 mb-1">Sistema de Monitoramento de Câmeras</h1>
+      <p class="muted mb-0">Painel estilo NOC com grid dinâmico, fullscreen, tema claro/escuro, login JWT e auto-refresh.</p>
+    </header>
+
+    <!-- Tecnologias -->
+    <section class="mb-4">
+      <h2 class="h5">Tecnologias</h2>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="chip">HTML5</span>
+        <span class="chip">CSS3</span>
+        <span class="chip">JavaScript (ES6+)</span>
+        <span class="chip">Bootstrap 5</span>
+        <span class="chip">Node.js</span>
+        <span class="chip">Express</span>
+        <span class="chip">jsonwebtoken (JWT)</span>
+      </div>
+    </section>
+
+    <!-- Recursos -->
+    <section class="mb-4">
+      <h2 class="h5">Recursos do Frontend</h2>
+      <ul class="mb-3">
+        <li>Grid de câmeras com <strong>layout responsivo</strong> (auto-fill).</li>
+        <li><strong>Fullscreen</strong> ao clicar em uma câmera.</li>
+        <li><strong>Tema claro/escuro</strong> alternável.</li>
+        <li><strong>Auto-refresh</strong> de snapshots (ex.: 15s).</li>
+        <li><strong>Autenticação via JWT</strong> (modal de login, verificação e logout).</li>
+      </ul>
+
+      <h2 class="h5">Recursos do Backend</h2>
+      <ul class="mb-0">
+        <li><code>POST /login</code> → autentica e retorna token JWT.</li>
+        <li><code>GET /verify</code> → valida token.</li>
+        <li>(Opcional) <code>GET /snapshot/:id</code> → proxy seguro para snapshots/streams.</li>
+      </ul>
+    </section>
+
+    <!-- Arquitetura -->
+    <section class="mb-4">
+      <h2 class="h5">Arquitetura</h2>
+      <p class="mb-2">Navegador (HTML/JS/CSS + Bootstrap) → <strong>Node/Express</strong> (API JWT) → Câmeras (snapshot/RTSP via proxy opcional).</p>
+      <p class="muted mb-0">Para produção, recomenda-se proxy backend para não expor credenciais/URLs das câmeras no front.</p>
+    </section>
+
+    <!-- Como executar -->
+    <section class="mb-4">
+      <h2 class="h5">Como executar localmente</h2>
+      <ol class="mb-3">
+        <li>Instale as dependências e execute o servidor:
+          <pre class="mt-2"><code>npm install
+node server.js</code></pre>
+        </li>
+        <li>Acesse <code>http://localhost:3000</code>.</li>
+        <li>Faça login (ex.: <code>admin/1234</code> , conforme seu <code>server.js</code>).</li>
+      </ol>
+      <div class="d-flex gap-2">
+        <a href="monitoramento/index.html" class="btn btn-outline-light btn-sm" target="_blank">Abrir Demo</a>
+        <a class="btn btn-outline-secondary btn-sm disabled" aria-disabled="true">Repositório (em breve)</a>
+      </div>
+    </section>
+
+    <!-- Próximos passos -->
+    <section class="mb-5">
+      <h2 class="h5">Próximos passos</h2>
+      <ul>
+        <li>Adicionar <code>/snapshot/:id</code> no backend para ocultar credenciais/IP.</li>
+        <li>Controle de permissões (admin x operador) e logs de acesso.</li>
+        <li>Suporte a RTSP (via gateway/servidor de mídia) e gravação de eventos.</li>
+      </ul>
+    </section>
+
+    <footer class="text-center muted">© LRT — Projeto Monitoramento de Câmeras</footer>
+  </div>
+</body>
+</html>
