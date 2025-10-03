@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sistema de Agenda • Clientes • Financeiro</title>
+  <!--
+    =============================================================
+    FRONTEND 100% em HTML + CSS + JavaScript (Vanilla)
+    • Persistência local: localStorage
+    • Autenticação simples: login por e-mail + senha (armazenada via hash fraco)
+    • Responsivo para desktop e smartphone
+    • Código comentado para manutenção
+    =============================================================
+  -->
+  <link rel="stylesheet" href="agenda.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Cabeçalho / Branding -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="title">Agenda • Clientes • Financeiro</div>
+          <div class="subtitle">Vanilla JS • LocalStorage • Responsivo</div>
+        </div>
+      </div>
+      <!-- Área de Tabs (renderizada via JS conforme permissões) -->
+      <nav class="tabs" id="tabs"></nav>
+    </header>
+
+    <!-- Área principal (telas são renderizadas via JavaScript) -->
+    <main id="view"></main>
+  </div>
+
+  <!-- Script principal (lógica do app) -->
+ <script defer src="agenda.js"></script>
+</body>
+</html>
