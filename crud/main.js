@@ -1,6 +1,6 @@
 'use strict'
 
-const API_BASE = 'http://186.194.32.186:3000' // same origin (served by backend)
+const API_BASE = 'https://186.194.32.186:3000' // same origin (served by backend)
 
 let __cacheClients = []
 
