@@ -163,148 +163,157 @@
   </div>
 
   <script>
-    // Algoritmo original refinado para a UI
-    function checkCashRegister(price, cash, cid) {
-      let change = Math.round(cash * 100) - Math.round(price * 100);
-      let cidTotal = 0;
-      
-      for (let elem of cid) {
-        cidTotal += Math.round(elem[1] * 100);
-      }
-      
-      if (change < 0) {
-        return { status: "ERROR_NEGATIVE", change: [] };
-      }
-      
-      if (change === 0) {
-        return { status: "EXACT_PAYMENT", change: [] };
-      }
+  // Função auxiliar segura para converter texto em número (trata vírgula ou ponto)
+  function parseVal(val) {
+    if (typeof val === 'number') return val;
+    if (!val) return 0;
+    return parseFloat(String(val).replace(',', '.')) || 0;
+  }
 
-      if (change > cidTotal) {
-        return { status: "INSUFFICIENT_FUNDS", change: [] };
-      } else if (change === cidTotal) {
-        return { status: "CLOSED", change: cid };
-      } else {
-        let answer = [];
-        let cidCopy = JSON.parse(JSON.stringify(cid)).reverse();
-        let moneyUnits = { 
-          "ONE HUNDRED": 10000, 
-          "TWENTY": 2000, 
-          "TEN": 1000, 
-          "FIVE": 500, 
-          "ONE": 100, 
-          "QUARTER": 25, 
-          "DIME": 10, 
-          "NICKEL": 5, 
-          "PENNY": 1 
-        };
-
-        for (let elem of cidCopy) {
-          let holder = [elem[0], 0];
-          let available = Math.round(elem[1] * 100);
-          let unitValue = moneyUnits[elem[0]];
-
-          while (change >= unitValue && available > 0) {
-            change -= unitValue;
-            available -= unitValue;
-            holder[1] += unitValue / 100;
-          }
-
-          if (holder[1] > 0) {
-            answer.push(holder);
-          }
-        }
-
-        if (change > 0) {
-          return { status: "INSUFFICIENT_FUNDS", change: [] };
-        }
-        
-        return { status: "OPEN", change: answer };
-      }
+  // Algoritmo do freeCodeCamp com precisão em centavos
+  function checkCashRegister(price, cash, cid) {
+    let change = Math.round(cash * 100) - Math.round(price * 100);
+    let cidTotal = 0;
+    
+    for (let elem of cid) {
+      cidTotal += Math.round(elem[1] * 100);
+    }
+    
+    if (change < 0) {
+      return { status: "ERROR_NEGATIVE", change: [] };
+    }
+    
+    if (change === 0) {
+      return { status: "EXACT_PAYMENT", change: [] };
     }
 
-    // Leitura dos valores da gaveta
-    function getCIDFromInputs() {
-      const inputs = document.querySelectorAll('.cid-val');
-      const cid = [];
-      inputs.forEach(input => {
-        cid.push([input.dataset.unit, parseFloat(input.value) || 0]);
-      });
-      return cid;
-    }
-
-    // Atualiza badge de total na gaveta
-    function updateTotalDrawer() {
-      const cid = getCIDFromInputs();
-      const total = cid.reduce((acc, curr) => acc + curr[1], 0);
-      document.getElementById('totalDrawerBadge').textContent = `Total: R$ ${total.toFixed(2)}`;
-    }
-
-    // Manipulador do formulário
-    document.getElementById('calcForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const price = parseFloat(document.getElementById('itemPrice').value);
-      const cash = parseFloat(document.getElementById('itemCash').value);
-      const cid = getCIDFromInputs();
-
-      const result = checkCashRegister(price, cash, cid);
-      
-      const resultArea = document.getElementById('resultArea');
-      const badgeContainer = document.getElementById('statusBadgeContainer');
-      const details = document.getElementById('changeDetails');
-      
-      resultArea.style.display = 'block';
-
-      if (result.status === "OPEN") {
-        badgeContainer.innerHTML = '<span class="status-badge bg-success text-white"><i class="bi bi-check-circle me-1"></i> STATUS: OPEN (Troco Disponível)</span>';
-        
-        let html = `<p class="mb-1 text-light">Troco devido: <strong>R$ ${(cash - price).toFixed(2)}</strong></p><ul class="list-group list-group-flush rounded bg-dark">`;
-        result.change.forEach(([unit, val]) => {
-          html += `<li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between"><span>${unit}</span><strong>R$ ${val.toFixed(2)}</strong></li>`;
-        });
-        html += `</ul>`;
-        details.innerHTML = html;
-
-      } else if (result.status === "CLOSED") {
-        badgeContainer.innerHTML = '<span class="status-badge bg-warning text-dark"><i class="bi bi-exclamation-triangle me-1"></i> STATUS: CLOSED (Gaveta Esvaziada)</span>';
-        details.innerHTML = `<p class="text-secondary">O valor do troco esgotou exatamente todo o dinheiro em caixa.</p>`;
-
-      } else if (result.status === "INSUFFICIENT_FUNDS") {
-        badgeContainer.innerHTML = '<span class="status-badge bg-danger text-white"><i class="bi bi-x-circle me-1"></i> STATUS: INSUFFICIENT_FUNDS</span>';
-        details.innerHTML = `<p class="text-danger mb-0">Não há saldo suficiente ou faltam cédulas/moedas menores para compor o troco exato.</p>`;
-
-      } else if (result.status === "EXACT_PAYMENT") {
-        badgeContainer.innerHTML = '<span class="status-badge bg-info text-dark"><i class="bi bi-info-circle me-1"></i> Pagamento Exato</span>';
-        details.innerHTML = `<p class="text-secondary mb-0">Nenhum troco é necessário.</p>`;
-
-      } else if (result.status === "ERROR_NEGATIVE") {
-        badgeContainer.innerHTML = '<span class="status-badge bg-danger text-white">Valor Insuficiente Pago</span>';
-        details.innerHTML = `<p class="text-danger mb-0">O cliente pagou menos do que o valor do produto.</p>`;
-      }
-    });
-
-    // Atualiza o total do caixa quando os inputs do CID mudam
-    document.querySelectorAll('.cid-val').forEach(input => {
-      input.addEventListener('input', updateTotalDrawer);
-    });
-
-    function resetDemo() {
-      document.getElementById('itemPrice').value = "19.50";
-      document.getElementById('itemCash').value = "20.00";
-      const defaults = {
-        "PENNY": 1.01, "NICKEL": 2.05, "DIME": 3.10, "QUARTER": 4.25,
-        "ONE": 90.00, "FIVE": 55.00, "TEN": 20.00, "TWENTY": 60.00, "ONE HUNDRED": 100.00
+    if (change > cidTotal) {
+      return { status: "INSUFFICIENT_FUNDS", change: [] };
+    } else if (change === cidTotal) {
+      return { status: "CLOSED", change: cid };
+    } else {
+      let answer = [];
+      // Copia profunda para não alterar os inputs visuais
+      let cidCopy = JSON.parse(JSON.stringify(cid)).reverse();
+      let moneyUnits = { 
+        "ONE HUNDRED": 10000, 
+        "TWENTY": 2000, 
+        "TEN": 1000, 
+        "FIVE": 500, 
+        "ONE": 100, 
+        "QUARTER": 25, 
+        "DIME": 10, 
+        "NICKEL": 5, 
+        "PENNY": 1 
       };
-      document.querySelectorAll('.cid-val').forEach(input => {
-        input.value = defaults[input.dataset.unit].toFixed(2);
-      });
-      document.getElementById('resultArea').style.display = 'none';
-      updateTotalDrawer();
-    }
 
-    // Inicialização
+      for (let elem of cidCopy) {
+        let holder = [elem[0], 0];
+        let available = Math.round(elem[1] * 100);
+        let unitValue = moneyUnits[elem[0]];
+
+        while (change >= unitValue && available > 0) {
+          change -= unitValue;
+          available -= unitValue;
+          holder[1] += unitValue / 100;
+        }
+
+        if (holder[1] > 0) {
+          answer.push(holder);
+        }
+      }
+
+      if (change > 0) {
+        return { status: "INSUFFICIENT_FUNDS", change: [] };
+      }
+      
+      return { status: "OPEN", change: answer };
+    }
+  }
+
+  // Leitura dos valores da gaveta com tratamento de vírgula
+  function getCIDFromInputs() {
+    const inputs = document.querySelectorAll('.cid-val');
+    const cid = [];
+    inputs.forEach(input => {
+      cid.push([input.dataset.unit, parseVal(input.value)]);
+    });
+    return cid;
+  }
+
+  // Atualiza badge de total na gaveta
+  function updateTotalDrawer() {
+    const cid = getCIDFromInputs();
+    const total = cid.reduce((acc, curr) => acc + curr[1], 0);
+    document.getElementById('totalDrawerBadge').textContent = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+  }
+
+  // Manipulador do formulário de cálculo
+  document.getElementById('calcForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const price = parseVal(document.getElementById('itemPrice').value);
+    const cash = parseVal(document.getElementById('itemCash').value);
+    const cid = getCIDFromInputs();
+
+    const result = checkCashRegister(price, cash, cid);
+    
+    const resultArea = document.getElementById('resultArea');
+    const badgeContainer = document.getElementById('statusBadgeContainer');
+    const details = document.getElementById('changeDetails');
+    
+    resultArea.style.display = 'block';
+
+    if (result.status === "OPEN") {
+      badgeContainer.innerHTML = '<span class="status-badge bg-success text-white"><i class="bi bi-check-circle me-1"></i> STATUS: OPEN (Troco Disponível)</span>';
+      
+      const changeDue = ((cash - price)).toFixed(2).replace('.', ',');
+      let html = `<p class="mb-2 text-light">Troco devido: <strong>R$ ${changeDue}</strong></p><ul class="list-group list-group-flush rounded bg-dark">`;
+      result.change.forEach(([unit, val]) => {
+        html += `<li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between"><span>${unit}</span><strong>R$ ${val.toFixed(2).replace('.', ',')}</strong></li>`;
+      });
+      html += `</ul>`;
+      details.innerHTML = html;
+
+    } else if (result.status === "CLOSED") {
+      badgeContainer.innerHTML = '<span class="status-badge bg-warning text-dark"><i class="bi bi-exclamation-triangle me-1"></i> STATUS: CLOSED (Gaveta Esvaziada)</span>';
+      details.innerHTML = `<p class="text-secondary mb-0">O valor do troco esgotou exatamente todo o dinheiro em caixa.</p>`;
+
+    } else if (result.status === "INSUFFICIENT_FUNDS") {
+      badgeContainer.innerHTML = '<span class="status-badge bg-danger text-white"><i class="bi bi-x-circle me-1"></i> STATUS: INSUFFICIENT_FUNDS</span>';
+      details.innerHTML = `<p class="text-danger mb-0">Não há saldo suficiente ou faltam cédulas/moedas menores para compor o troco exato.</p>`;
+
+    } else if (result.status === "EXACT_PAYMENT") {
+      badgeContainer.innerHTML = '<span class="status-badge bg-info text-dark"><i class="bi bi-info-circle me-1"></i> Pagamento Exato</span>';
+      details.innerHTML = `<p class="text-secondary mb-0">Nenhum troco é necessário.</p>`;
+
+    } else if (result.status === "ERROR_NEGATIVE") {
+      badgeContainer.innerHTML = '<span class="status-badge bg-danger text-white">Valor Insuficiente Pago</span>';
+      details.innerHTML = `<p class="text-danger mb-0">O cliente pagou menos do que o valor total da compra.</p>`;
+    }
+  });
+
+  // Atualiza em tempo real enquanto digita
+  document.querySelectorAll('.cid-val').forEach(input => {
+    input.addEventListener('input', updateTotalDrawer);
+  });
+
+  function resetDemo() {
+    document.getElementById('itemPrice').value = "19.50";
+    document.getElementById('itemCash').value = "20.00";
+    const defaults = {
+      "PENNY": 1.01, "NICKEL": 2.05, "DIME": 3.10, "QUARTER": 4.25,
+      "ONE": 90.00, "FIVE": 55.00, "TEN": 20.00, "TWENTY": 60.00, "ONE HUNDRED": 100.00
+    };
+    document.querySelectorAll('.cid-val').forEach(input => {
+      input.value = defaults[input.dataset.unit].toFixed(2);
+    });
+    document.getElementById('resultArea').style.display = 'none';
     updateTotalDrawer();
+  }
+
+  // Inicializa o total na primeira carga
+  updateTotalDrawer();
   </script>
 </body>
 </html>
